@@ -1,0 +1,31 @@
+WITH product_count_2020 AS (
+	SELECT 
+		segment,
+		COUNT(DISTINCT product_code) AS product_cnt_2020
+	FROM fact_sales_monthly s
+	JOIN dim_product p
+		USING(product_code)
+	WHERE fiscal_year = 2020
+	GROUP BY segment , fiscal_year
+),
+product_count_2021 AS(
+	SELECT 
+		segment,
+		COUNT(DISTINCT product_code) AS product_cnt_2021
+	FROM fact_sales_monthly s
+	JOIN dim_product p
+		USING(product_code)
+	WHERE fiscal_year = 2021
+	GROUP BY segment,fiscal_year
+)
+
+SELECT 
+	p20.segment,
+	product_cnt_2020,
+	product_cnt_2021,
+    product_cnt_2021 - product_cnt_2020 AS diiference
+FROM product_count_2020 p20
+JOIN product_count_2021 p21
+	USING(segment)
+ORDER BY segment;
+	
