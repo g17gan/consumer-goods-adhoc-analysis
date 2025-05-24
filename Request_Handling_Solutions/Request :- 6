@@ -1,0 +1,14 @@
+SELECT
+	customer_code,
+    customer,
+    ROUND(AVG(pre_invoice_discount_pct),2) AS avg_discount
+FROM dim_customer c
+JOIN fact_pre_invoice_deductions p
+	USING(customer_code)
+WHERE market = "India" AND
+	fiscal_year = 2021 AND 
+    ROUND(pre_invoice_discount_pct,2) > (
+SELECT ROUND(AVG(pre_invoice_discount_pct),2) FROM fact_pre_invoice_deductions WHERE fiscal_year = 2021)
+GROUP BY customer_code , customer
+ORDER BY avg_discount DESC
+LIMIT 5;
