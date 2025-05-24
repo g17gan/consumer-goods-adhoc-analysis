@@ -1,0 +1,24 @@
+WITH x AS (
+	SELECT 
+		customer_code,
+		customer
+	FROM dim_customer 
+	WHERE customer = "Atliq Exclusive"
+),
+y AS (
+SELECT
+	s.*,
+    gross_price * sold_quantity AS gross_sales_amount
+FROM fact_sales_monthly s
+JOIN fact_gross_price g
+	USING(product_code, fiscal_year)
+)
+SELECT
+	CONCAT(MONTHNAME(y.date), ' ', YEAR(y.date)) AS 'Month',
+    y.fiscal_year,
+    ROUND(SUM(y.gross_sales_amount),2) AS gross_sales_amount
+FROM y
+JOIN X
+	USING(customer_code)
+GROUP BY y.date, y.fiscal_year
+ORDER BY fiscal_year;
